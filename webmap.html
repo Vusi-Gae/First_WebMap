@@ -13,6 +13,10 @@
 	<link rel="stylesheet" href="plugins/sidebar/L.Control.Sidebar.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+	<link rel="stylesheet" href="https://ppete2.github.io/Leaflet.PolylineMeasure/Leaflet.PolylineMeasure.css" />
+	<link rel="stylesheet" href="plugins/mouseposition/L.Control.MousePosition.css">
+	<link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.css"/>
+	<link rel="stylesheet" href="plugins/minimap/Control.MiniMap.min.css">
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet-src.js"></script>
@@ -20,6 +24,11 @@
 	<script src="source/jquery-ui.min.js"></script>
 	<script src="plugins/sidebar/L.Control.Sidebar.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
+	<script src="https://ppete2.github.io/Leaflet.PolylineMeasure/Leaflet.PolylineMeasure.js"></script>
+	<script src="plugins/mouseposition/L.Control.MousePosition.js"></script>
+	<script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.js"></script>
+	<<script src="plugins/minimap/Control.MiniMap.min.js"></script>
+
 
 </head>
 <body>
@@ -30,9 +39,12 @@
 
 	<script>
 
-	
+		var mymap;
+		var baseLayers;
+		var overlays;
 		
-		var mymap = L.map('mapdiv', {
+
+		mymap = L.map('mapdiv', {
 			center: [-26.2041, 28.0473],
 			zoom: 13,
 			attributionControl: false,
@@ -44,11 +56,18 @@
 								subdomains:['mt0', 'mt1', 'mt3',]
 							});
 
-		var openStreetMap = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png?', {maxZoom:23}).addTo(mymap);
+		var openStreetMap = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png?', {maxZoom:23});
 
 		var CartoDB_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {maxZoom: 23});
 
 		var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 23});
+
+		var Esri_WorldImagery_minimap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 23});
+
+		var OpenTopoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+					            maxZoom: 23,
+					            
+			});
 
 		GoogleStreets.addTo(mymap);
 
@@ -71,6 +90,47 @@
 		//Scale Bar
 
 		L.control.scale({position: 'bottomleft', maxWidth: '200', imperial:false}).addTo(mymap);
+
+		//Zoon Control
+		L.control.zoom({position: 'topright'}).addTo(mymap);
+
+		//Measure
+		L.control.polylineMeasure({position: 'topright'}).addTo(mymap);
+
+		//Mouse Position
+		L.control.mousePosition({position: 'bottomright'}).addTo(mymap);
+		
+		//Draw Control on Geoman  
+		mymap.pm.addControls({  
+		  position: 'topleft',  
+		  drawCircleMarker: false,
+		  rotateMode: false,
+		}); 
+
+		mymap.on("pm:create", function(e){
+			console.log(e);
+		});
+
+		//Mini Map
+
+		var miniMap = new L.Control.MiniMap(Esri_WorldImagery_minimap, {
+			position: 'bottomright',
+			height: '250',
+			width: '250'
+		}).addTo(mymap);
+
+		//Layer Control
+		baseLayers = {
+		    "Google Street": GoogleStreets,
+		    "OSM": openStreetMap,
+		    "CartoBD Positron": CartoDB_Positron,
+		    "Esri Imagery": Esri_WorldImagery,
+		    "Open Top Map": OpenTopoMap
+		};
+
+		var control_layers = L.control.layers(baseLayers, overlays).addTo(mymap)
+
+
 
 	</script>
 

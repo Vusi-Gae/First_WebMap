@@ -1,3 +1,17 @@
 #mapdiv {
 	height: 100vh;
 }
+
+/* Make EasyButton icon bigger */
+.leaflet-bar.easy-button-button {
+  font-size: 30px !important;
+  width: 50px !important;
+  height: 50px !important;
+  line-height: 50px !important;
+}
+
+/* Make scale bar text bigger */
+.leaflet-control-scale-line {
+  font-size: 20px !important;
+  line-height: 1.5 !important;
+}
